@@ -15,9 +15,9 @@ namespace DoubleAnyRad {
             instance = this;
 
             Log("Initalizing.");
-            ModHooks.AfterSavegameLoadHook += AfterSaveGameLoad;
-            ModHooks.NewGameHook += AddComponent;
-            ModHooks.LanguageGetHook += LangGet;
+            ModHooks.Instance.AfterSavegameLoadHook += AfterSaveGameLoad;
+            ModHooks.Instance.NewGameHook += AddComponent;
+            ModHooks.Instance.LanguageGetHook += LangGet;
         }
 
 
@@ -25,17 +25,16 @@ namespace DoubleAnyRad {
             return FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(DoubleAnyRad)).Location).FileVersion;
         }
 
-        private static string LangGet(string key, string sheettitle, string orig) {
-            if (key != null) {
-                switch (key) {
-                    case "ABSOLUTE_RADIANCE_SUPER": return "Any";
-                    case "GG_S_RADIANCE": return "God of meme.";
-                    case "GODSEEKER_RADIANCE_STATUE": return "Ok.";
-                    default: return Language.Language.GetInternal(key, sheettitle);
-                }
-            }
-            return orig;
-        }
+        private static string LangGet(string key, string sheettitle)
+		{
+			return key switch
+			{
+				"ABSOLUTE_RADIANCE_SUPER" => "Any", 
+				"GG_S_RADIANCE" => "God of meme.", 
+				"GODSEEKER_RADIANCE_STATUE" => "Ok.", 
+				_ => global::Language.Language.GetInternal(key, sheettitle), 
+			};
+		}
 
         private static void AfterSaveGameLoad(SaveGameData data) {
             AddComponent();
@@ -46,9 +45,9 @@ namespace DoubleAnyRad {
         }
 
         public void Unload() {
-            ModHooks.AfterSavegameLoadHook -= AfterSaveGameLoad;
-            ModHooks.NewGameHook -= AddComponent;
-            ModHooks.LanguageGetHook -= LangGet;
+            ModHooks.Instance.AfterSavegameLoadHook -= AfterSaveGameLoad;
+            ModHooks.Instance.NewGameHook -= AddComponent;
+            ModHooks.Instance.LanguageGetHook -= LangGet;
             GameManager instance = GameManager.instance;
             AbsFinder absFinder = ((instance != null) ? instance.gameObject.GetComponent<AbsFinder>() : null);
             if (!(absFinder == null))
